@@ -1,24 +1,28 @@
 from django.db import models
-import datetime as dt
-from django.core.validators import FileExtensionValidator
+import cloudinary
+from cloudinary.models import CloudinaryField
+from django.db.models import Q
 from django.contrib.auth.models import User
 from tinymce.models import HTMLField
-from django.db.models.signals import post_save
-from django.dispatch import receiver
-from cloudinary.models import CloudinaryField
+from django.utils import timezone
+from django.dispatch  import receiver
+from django.http import Http404
+from django.core.exceptions import ObjectDoesNotExist
 
 # Create your models here.
-
-
 class Profile(models.Model):
-    First_Name = models.CharField(max_length=50)
-    Last_Name = models.CharField(max_length=50)
-    Email = models.EmailField(max_length=50)
-    bio = HTMLField()
-    profile_pic = CloudinaryField('image', default="media/", validators=[
-                                  FileExtensionValidator(['png', 'jpg', 'jpeg'])], blank=True)
-    user = models.OneToOneField(
-        User, on_delete=models.CASCADE, primary_key=True)
+    '''
+    User profile model
+    '''
+    user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
+    image = CloudinaryField('image', blank=True, null=True)
+    biography = HTMLField(blank=True)
+    created = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
+
+
+    def __str__(self):
+        return self.biography
 
     def save_profile(self):
         self.save()
@@ -27,59 +31,57 @@ class Profile(models.Model):
         self.delete()
 
     @classmethod
-    def update_name(cls, id, new_First_Name):
-        cls.objects.filter(user_id=id).update(First_Name=new_First_Name)
-        new_title_object = cls.objects.get(First_Name=new_First_Name)
-        new_name = new_title_object.First_Name
-        return new_name
+    def update_bio(cls,id, bio):
+        update_profile = cls.objects.filter(id = id).update(bio = bio,)
+        return update_profile
+
+    @classmethod
+    def get_all_profiles(cls):
+        profile = Profile.objects.all()
+        return profile
+
+    @classmethod
+    def search_user(cls,user):
+        return cls.objects.filter(user__username__icontains=user).all()
 
 
-@receiver(post_save, sender=User)
-def create_profile(sender, instance, created, **kwargs):
-    if created:
-        Profile.objects.create(user=instance)
+class Projects(models.Model):
+    author = models.ForeignKey(User, on_delete=models.CASCADE, blank=True)
+    image = CloudinaryField('image', blank=True, null=True)
+    description = models.TextField(max_length=300)
+    date_created = models.DateTimeField(default=timezone.now)
+    title = models.CharField(max_length=255)
+    country = models.CharField(max_length=55)
+    link = models.URLField()
+    author_profile = models.ForeignKey(Profile, on_delete=models.CASCADE, blank = True, null=True)
 
-
-@receiver(post_save, sender=User)
-def save_profile(sender, instance, **kwargs):
-    instance.profile.save()
-
-
-class Post(models.Model):
-    title = models.CharField(max_length=30)
-    image = CloudinaryField('image')
-    description = HTMLField()
-    link = models.CharField(max_length=500)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-
-    def save_post(self):
+    def save_project(self):
         self.save()
 
-    def delete_post(self):
+    def __str__(self):
+        return f'{self.author} Post'
+
+    class Meta:
+        db_table = 'project'
+        ordering = ['date_created']
+
+    def delete_project(self):
         self.delete()
 
     @classmethod
-    def update_title(cls, id, new_title):
-        cls.objects.filter(pk=id).update(title=new_title)
-        new_title_object = cls.objects.get(title=new_title)
-        new_title = new_title_object.title
-        return new_title
+    def search_projects(cls,search_term):
+        project = cls.objects.filter(title__icontains=search_term)
+        return project
 
     @classmethod
-    def get_single_project(cls, id):
-        post = cls.objects.get(pk=id)
-        return post
+    def get_project(cls,id):
+        try:
+            project = Projects.objects.get(pk=id)
+        except ObjectDoesNotExist:
+            raise Http404()
+        return project
 
-    def __str__(self):
 
-        return self.title
-
-
-class Reviews(models.Model):
-    title = models.CharField(max_length=50)
-    review = models.TextField()
-    design = models.PositiveIntegerField(default=0)
-    usability = models.PositiveIntegerField(default=0)
-    content = models.PositiveIntegerField(default=0)
-    post = models.ForeignKey(Post, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+class MoringaMerch(models.Model):
+    author = models.TextField(max_length=20)
+    author_profile = models.TextField()

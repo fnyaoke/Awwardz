@@ -1,0 +1,20 @@
+{%extends 'base.html'%}
+{% load bootstrap4 %}
+{% load static %} 
+{% block content %}
+{{block.super}}
+<div class="container" style="margin-top:8rem; background-image: url(/static/photos/bckgrnd.jpg)">
+    <div class="row">
+        <div class="col-md-6 mx-auto">
+            <form action="{% url 'new_post' %}" method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                {% bootstrap_form form %}
+                <!-- <input type="submit" class="btn btn-primary btn-sm" value="POST"> -->
+                <button  class="btn btn-outline-success" type="submit">SUBMIT</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

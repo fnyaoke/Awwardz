@@ -1,24 +1,23 @@
-from django.urls import path,reverse
+from django.conf.urls import url, include
 from . import views
-from django.contrib.auth import views as auth_views
 from django.conf import settings
-from django.conf.urls.static import static
+from django.conf.urls.static import  static
 
-urlpatterns = [
 
-    path('', views.home, name='home'),
-    path('newproject/', views.new_project, name='newproject'),
-    path('search_results/', views.search_project, name="search_project"),
-    path('update/', views.update_profile, name="profileupdate"),
-    path('login/', auth_views.LoginView.as_view(template_name='registration/login.html'), name='login'),
-    path('profile/', views.profile_info, name='profile'),
-    path('accounts/register', views.registration, name='register'),
+urlpatterns=[
+    url(r'^$', views.index, name='home'),
+    url(r'^$', views.index, name='home'),
+    url(r'^api/merch/$', views.LoginView.as_view()),
+    url(r'^api/merch/$', views.MerchList.as_view()),
+    url(r'api/merch/merch-id/(?P<pk>[0-9]+)/$', views.MerchDescription.as_view()),
+    url(r'^ratings/', include('star_ratings.urls', namespace='ratings')),
+    url(r'^profile/$', views.profile_info, name='profile'),
+    url(r'^update/$', views.profile_update, name='update'),
+    url(r'^search/', views.search_results, name = 'search_results'),
+    url(r'^new_post/', views.new_post, name = 'new_post'),
+    url(r'^add_image/', views.add_image, name = 'add_image'),
 
 ]
 
 if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL,
-                          document_root=settings.MEDIA_ROOT)
-
-def get_success_url(self):
-    return reverse('award:profile')
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

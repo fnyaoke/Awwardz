@@ -1,14 +1,17 @@
-from .models import Post, Profile
 from rest_framework import serializers
+from .models import *
 
-
-class PostSerializer(serializers.HyperlinkedModelSerializer):
+class ProjectsSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Post
-        fields = ('title', 'image', 'description', 'link')
+        model = Projects
+        fields = ['author', 'image', 'description', 'date_created', 'title', 'link', 'author_profile']
 
-
-class ProfileSerializer(serializers.HyperlinkedModelSerializer):
+class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
-        fields = (' First_Name', 'Last_Name', ' Email', ' bio', ' profile_pic')
+        fields = ['user', 'image', 'biography', 'created', 'modified']
+
+class MerchSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MoringaMerch
+        fields = ['author', 'author_profile']

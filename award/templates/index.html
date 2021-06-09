@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load ratings % }
+{% bootstrap4 % }
+{% block styles %}
+{{block.super}}
+
+{% endblock %}
+{% block content %}
+{{block.super}}
+
+<div class="btn1 btn container-fluid" style="background-color: black"
+    id="topImg">
+    <div class="header" style="height:50vh; font-family: 'Yanone Kaffeesatz', sans-serif;">
+        <div class="container" style="color:white;">
+            <div class="row" style="padding-top:50px;">
+                <div class="col-md-4" style="font-size: 25px; font-family: 'Sansita Swashed', cursive;"><cite>Site of
+                        the day{{date|date:"F d, Y"}}</cite></div>
+            </div>
+            <div style="text-align:center; font-size: 90px; padding-top:35px;">
+                <h1>Project One</h1>
+            </div>
+            <div style="text-align:center; font-size: 30px">
+                <h4> By:<strong style="color:#ffffff;" class="mr-3">Florence Nyaoke</strong>From Kenya<strong
+                        class="ml-3">8.03</strong></h4>
+            </div>
+        </div>
+    </div>
+    <div id="box" class="col-md-4">
+        <button class="btn"
+            style=" border-radius: 5em; background-color: #49c5b6; border:none; padding: 2px; width: 100px;"><a
+                target="blank" style="color: white; text-decoration:none;"
+                href="#">Visit</a></button>
+        <button class="btn"
+            style="color: white; border-radius: 5em; background-color: transparent; border:1px solid white; padding: 2px; width: 80px;">Collect</button>
+
+    </div>
+</div>
+<div class="jumbotron">
+    <div class="container-fluid"
+        style="margin-bottom: 10px;  padding-left:55px; padding-right:55px; font-family: 'Grenze Gotisch', cursive;">
+        <h3 class="text-center text-danger" style="font-family: 'Aclonica', sans-serif;">POSTED PROJECTS</h3>
+    </div>
+    <div class="row">
+        {% for post in projects %}
+
+        <div class="col-md-3" style="margin-bottom:25px;">
+            <div id="image" class="hover02 column body">
+            </div>
+            <div class="card-header" style="background-color:white; font-size: 13px; margin-top:0px; height: 100vh;">
+                <img class="card-img-top" src="{{post.image.url}}" alt="{{post.title}}" height="200px" width="200px">
+                <p style="font-weight:bold;" class="text-center"><strong> {{post.title}}</strong></p>
+                <p style="font-weight:bold;" class="text-center"><strong>{{post.description}}</strong> </p>
+                <p style="font-weight:bold;" class="text-center"><strong>FROM: <i>{{post.country}}</i></strong> </p>
+                <p style="font-weight:bold;" class="text-center"><strong>{{post.post_date|date:"d /m/Y"}}</strong> </p>
+                <small class="text-muted ml-2"><img src="{{ project_item.Author.profile.photo.url }}" alt=""
+                        class="rounded-circle img-fluid mr-1" style="width: 30px;">
+                    posted By: {{post.author|upper}} </small>
+
+                <div class="">
+
+                    <button class="btn"
+                        style=" border-radius: 5em; background-color: #49c5b6; border:none; padding: 2px; height:40px; width: 200px;"><a
+                            target="blank" style="color: white; text-decoration:none;"
+                            href="{{post.link}}"><strong>Visit
+                                Website</strong></a></button>
+
+
+                </div>
+
+        </div>
+
+        </div>
+        {% endfor %}
+    </div>
+</div>
+</div>
+{% endblock %}
+
+
+<link rel="stylesheet" href="{% static 'star-ratings/css/star-ratings.css' %}">
+<script type="text/javascript" src="{% static 'star-ratings/js/dist/star-ratings.min.js' %}"></script>
